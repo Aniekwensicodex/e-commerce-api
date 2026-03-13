@@ -13,7 +13,7 @@ const sendToken = (user, statusCode, res, message = "Success") => {
     firstName: user.firstName,
     lastName: user.lastName,
     email: user.email,
-    number: user.number,
+    phone: user.phone,
     role: user.role,
     avatar: user.avatar,
     isEmailVerified: user.isEmailVerified,

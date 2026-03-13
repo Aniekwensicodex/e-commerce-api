@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema(
     },
     phone: {
       type: String, required: [true, "Phone number is required"],
-      match: [/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"],
     },
     isEmailVerified: { type: Boolean, default: false },
     emailVerificationToken: String,
