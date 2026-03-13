@@ -7,12 +7,12 @@ const { uploadAvatar, deleteImage } = require("../config/cloudinary");
 
 // POST /api/auth/register
 exports.register = async (req, res, next) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password, number } = req.body;
 
   const existing = await User.findOne({ email });
   if (existing) return next(new AppError("Email already registered", 400));
 
-  const user = await User.create({ firstName, lastName, email, password });
+  const user = await User.create({ firstName, lastName, email, password, number });
 
   // Send verification email
   const verifyToken = user.getEmailVerificationToken();
@@ -51,10 +51,10 @@ exports.getMe = async (req, res) => {
 
 // PUT /api/auth/update-profile
 exports.updateProfile = async (req, res, next) => {
-  const { name, address } = req.body;
+  const { name, email } = req.body;
   const user = await User.findByIdAndUpdate(
     req.user.id,
-    { name, address },
+    { name, email },
     { new: true, runValidators: true }
   );
   res.json({ success: true, user });

@@ -18,9 +18,9 @@ const userSchema = new mongoose.Schema(
       url: { type: String, default: "https://res.cloudinary.com/demo/image/upload/v1/ecommerce/avatars/default.png" },
       publicId: { type: String, default: "" },
     },
-    address: {
-      street: String, city: String, state: String,
-      zipCode: String, country: String,
+    number: {
+      type: String, required: [true, "Phone number is required"],
+      match: [/^\+?[1-9]\d{1,14}$/, "Please enter a valid phone number"],
     },
     isEmailVerified: { type: Boolean, default: false },
     emailVerificationToken: String,
