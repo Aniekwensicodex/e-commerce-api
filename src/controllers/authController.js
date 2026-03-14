@@ -50,16 +50,36 @@ exports.getMe = async (req, res) => {
 };
 
 // PUT /api/auth/update-profile
-exports.updateProfile = async (req, res, next) => {
-  const { name, email } = req.body;
-  const user = await User.findByIdAndUpdate(
-    req.user.id,
-    { name, email },
-    { new: true, runValidators: true }
-  );
-  res.json({ success: true, user });
-};
+exports.update_single_user = async function(req, res) {
+  const user = await User.findById(req.params.id);
+  const {
+    firstName,
+    lastName,
+    phone,
+    email
+  } = req.body;
 
+  if (user) {
+    user.firstName = firstName || user.firstName;
+    user.lastName = lastName || user.lastName;
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+
+    const updatedUser = await user.save();
+
+    if (updatedUser) {
+      res.status(201).json({
+        status: "Ok",
+        message: "User updated successfully",
+        data: updatedUser
+      });
+    } else {
+      res.json({ message: "Something went wrong" });
+    }
+  } else {
+    res.json({ error: "User does not exist" });
+  }
+};
 // PUT /api/auth/update-password
 exports.updatePassword = async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
