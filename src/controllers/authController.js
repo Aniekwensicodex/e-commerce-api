@@ -50,8 +50,7 @@ exports.getMe = async (req, res) => {
 };
 
 // PUT /api/auth/update-profile
-exports.update_single_user = async function(req, res) {
-  const user = await User.findById(req.params.id);
+exports.updateProfile = async (req, res, next) => {
   const {
     firstName,
     lastName,
@@ -59,27 +58,19 @@ exports.update_single_user = async function(req, res) {
     email
   } = req.body;
 
-  if (user) {
-    user.firstName = firstName || user.firstName;
-    user.lastName = lastName || user.lastName;
-    user.email = email || user.email;
-    user.phone = phone || user.phone;
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { firstName, lastName, phone, email },
+    { new: true, runValidators: true }
+  ).select('-password');
 
-    const updatedUser = await user.save();
-
-    if (updatedUser) {
-      res.status(201).json({
-        status: "Ok",
-        message: "User updated successfully",
-        data: updatedUser
-      });
-    } else {
-      res.json({ message: "Something went wrong" });
-    }
-  } else {
-    res.json({ error: "User does not exist" });
+  if (!user) {
+    return next(new AppError("User not found", 404));
   }
+
+  sendToken(user, 200, res, "Profile updated successfully");
 };
+
 // PUT /api/auth/update-password
 exports.updatePassword = async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
@@ -158,7 +149,7 @@ exports.uploadUserAvatar = [
     const user = await User.findById(req.user.id);
 
     // Delete old avatar from Cloudinary
-    if (user.avatar.publicId) {
+    if (user.avatar && user.avatar.publicId) {
       await deleteImage(user.avatar.publicId);
     }
 
